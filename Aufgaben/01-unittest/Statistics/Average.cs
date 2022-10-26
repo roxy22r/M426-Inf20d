@@ -10,13 +10,22 @@ namespace Statistics
             int sum = 0;
             double mean = 0.0;
 
-            foreach (int number in numbers)
+            if (numbers.Count > 0)
             {
-                sum += number;
+                foreach (int number in numbers)
+                {
+                    sum += number;
+                }
+            }
+            else {
+                throw new ArgumentException(String.Format("{0} can't be Empty", numbers), "num");
+
             }
 
             mean = (double)sum / numbers.Count;
             return mean;
         }
     }
+
+      
 }

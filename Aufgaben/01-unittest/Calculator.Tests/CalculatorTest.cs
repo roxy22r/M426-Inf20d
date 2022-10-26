@@ -21,6 +21,7 @@ namespace Calculator.Tests
             Assert.Equal(expected, actual);
         }
 
+
         [Fact]
         public void TestSubtractFourFromSixIsTwo()
         {
@@ -36,5 +37,70 @@ namespace Calculator.Tests
             // Then
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void TestMultiplyFiveMultiplySixIsThirty()
+        {
+            // Given
+            int a = 5;
+            int b = 6;
+            int expected = 30;
+            Calculator calculator = new Calculator();
+
+            // When
+            int actual = calculator.Multiply (a, b);
+
+            // Then
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestMultiplyFiveMultiplySevenIsNotThirty()
+        {
+            // Given
+            int a = 5;
+            int b = 7;
+            int expected = 30;
+            Calculator calculator = new Calculator();
+
+            // When
+            int actual = calculator.Multiply(a, b);
+
+            // Then
+            Assert.NotEqual (expected, actual);
+        }
+
+
+        [Fact]
+        public void TestDivisionTenDivideByTwoIsFive()
+        {
+            // Given
+            int a = 10;
+            int b = 2;
+            int expected = 5;
+            Calculator calculator = new Calculator();
+
+            // When
+            int actual = calculator.Division (a, b);
+
+            // Then
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestDivisionZeroDivideByTwoThrowException()
+        {
+            // Given
+            int a = 5;
+            int b = 0;
+            Calculator calculator = new Calculator();
+
+            // When
+
+            // Then
+            Assert.Throws<ArgumentException >(()=> calculator.Division(a, b));
+        }
+
+
     }
 }
