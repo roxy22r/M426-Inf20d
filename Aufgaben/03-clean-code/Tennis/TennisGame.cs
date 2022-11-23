@@ -2,71 +2,82 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace Tennis
 {
+    public enum ScoreText {
+        Love = 0,
+        Fifteen = 1,
+        Thirty = 2,
+        Forty = 3
+    }
     public class TennisGameManager
     {
       private  Player player1 = new Player();
       private Player player2 = new Player();  
-      private string Five_teen = "Fifteen";
 
 
-        public TennisGameManager(string player1Name, 
-            string player2Name)
+        public TennisGameManager(string player1Name, string player2Name)
             
         {
             this.player1.Name = player1Name;
-            player1.Point = 0;
             this.player2.Name = player2Name;
         }
 
         public string Score_Getter()
         {
-            var score = "";
+            ScoreText score;
             if (doBothHaveSamePointsAndGameIsSamllerThanThree())
             {
-                if (player1.Point == 0)
-                    score = "Love";
-                if (player1.Point == 1)
-                {
-                    score = "Fifteen";
+               int scoreTextValues= System.Enum.GetNames(typeof(ScoreText)).Length;
+                for (int score = 0; score<=scoreTextValues;score++) {
+                    if (player1.Point == score)
+                        score = (ScoreText)score;
                 }
+
+
+              
+                if (player1.Point == 1)
+                    score = "Fifteen";
                 if (player1.Point == 2)
                     score = "Thirty";
-          
+
                 score += "-All";
             }
-            if (player1.Point == player2.Point && player1.Point> 2)
+            if (player1.Point == player2.Point && player1.Point > 2)
                 score = "Deuce";
 
-            if (player1.Point > 0 && player2.Point== 0)
-            {
-                if (player1.Point == 1)
-                    player1.ResultText = Five_teen;
-                if (player1.Point == 2)
-                    player1.ResultText = "Thirty";
-                if (player1.Point == 3)
-                    player1.ResultText = "Forty";
+            playerOneIsMoreThanZeroePlayerTwoEqualZero(player1,player2);
+            secondPlayerLessThanForeButMoreThanFirstPlayer(player1,player2);
+           score= secondPlayerLessThanFirstAndBiggerOrEqualThree(score,player1,player2);
 
-                player2.ResultText = "Love";
-                score = player1.ResultText + "-" + player2.ResultText;
-            }
-            if (player2.Point > 0 && player1.Point== 0)
-            {
-                var temp = player2.Point;
-                if (temp == 1)
-                    player2.ResultText = "Fifteen";
-                else
-                {
-                    // todo: 
-                }
-                if (temp == 2)
-                    player2.ResultText = "Thirty";
-                if (temp == 3)
-                    player2.ResultText = "Forty";
+          
+            Player player = GetWinner(score, player1, player2);
+            return score;
+        }
 
-                player1.ResultText = "Love";
-                score = player1.ResultText + "-" + player2.ResultText;
+        private string secondPlayerLessThanFirstAndBiggerOrEqualThree(string score,Player player1,Player player2)
+        {
+
+            if (isFirstPlayerScoreHigherThanOther(player1, player2) && isScoreHigherOrEqualThreee(player2))
+            {
+                score = "Advantage" + player1;
             }
-            if (player1.Point > player2.Point&& player1.Point < 4)
+
+            return score;
+        }
+
+        private static bool isScoreHigherOrEqualThreee(Player player)
+        {
+            return player.Point >= 3;
+        }
+
+        private static bool isFirstPlayerScoreHigherThanOther(Player player1, Player player2)
+        {
+            return player1.Point > player2.Point;
+        }
+
+        private void secondPlayerLessThanForeButMoreThanFirstPlayer(Player player1, Player player2)
+        {
+
+            if(isFirstPlayerScoreHigherThanOther(player1,player2) && player1.Point < 4)
             {
                 if (player1.Point == 2)
                     player1.ResultText = "Thirty";
@@ -76,58 +87,58 @@ namespace Tennis
                     player2.ResultText = "Fifteen";
                 if (player2.Point == 2)
                     player2.ResultText = "Thirty";
-                score = player1.ResultText + "-" + player2.ResultText;
             }
 
+        }
 
-
-            if (player2.Point > player1.Point && player2.Point < 4)
+        private void playerOneIsMoreThanZeroePlayerTwoEqualZero(Player player1, Player player2)
+        {
+            if (isSocreMoreThanZero(player1) && isSocreEqualToZero(player2))
             {
-                if (player2.Point == 2)
-                    player2.ResultText = "Thirty";
-                if (player2.Point == 3)
-                    player2.ResultText = "Forty";
                 if (player1.Point == 1)
-                    player1.ResultText = "Fifteen";
+                    player1.ResultText = "Five_teen";
                 if (player1.Point == 2)
                     player1.ResultText = "Thirty";
-                score = player1.ResultText + "-" + player2.ResultText;
+                if (player1.Point == 3)
+                    player1.ResultText = "Forty";
+                player2.ResultText = "Love";
             }
 
-            if (player1.Point > player2.Point && player2.Point >= 3)
-            {
-                score = "Advantage player1";
-            }
+        }
 
-            if (player2.Point > player1.Point && player1.Point >= 3)
-            {
-                score = generate_Player_2_Name();
-            }
+        private static bool isSocreEqualToZero(Player player)
+        {
+            return player.Point == 0;
+        }
 
-            if (player1.Point >= 4 && player2.Point >= 0 && (player1.Point - player2.Point) >= 2)
-            {
-                score = "Win for player1";
-            }
-            score = returnWinForPlayerOneIfWon(score, player1.Point, player2.Point);
-            return score;
+        private bool isSocreMoreThanZero(Player player) {
+            return player.Point > 0;
         }
 
         private bool doBothHaveSamePointsAndGameIsSamllerThanThree()
         {
-            return player1.Point == player2.Point && player1.Point < 3;
-        }
-        private static string generate_Player_2_Name()
-        {
-            return "Advantage player2";
+            return isPlayerSocreEqual(player1,player1) && player1.Point < 3;
         }
 
-        public string returnWinForPlayerOneIfWon(string s, int q, int y)
+        private bool isPlayerSocreEqual(Player player1, Player player2)
         {
-            if (y >= 4 && q >= 0 && (y - q) >= 2)
+            return player1.Point == player2.Point;
+        }
+
+        public static Player GetWinner(Player player1, Player player2)
+        {
+            if (player2.Point >= 4 && player1.Point >= 0 && (player2.Point - player1.Point) >= 2)
             {
-                return "Win for player2";
+                return player2;
             }
-            return s; 
+            else {
+                return null;
+            }
+                  
+        }
+
+        private string createWinnerText(Player player) {
+            return "Win for" +player.Name;
         }
 
         public void SetPlayer1Score(int number)

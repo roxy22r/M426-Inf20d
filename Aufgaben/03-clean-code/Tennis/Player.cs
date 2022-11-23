@@ -9,7 +9,7 @@ namespace Tennis
     internal class Player
     {
         private string name;
-        private int point;
+        private int point = 0;
         private string resultText;
 
         public string Name { get { return name; } set { name = value; } }
