@@ -10,58 +10,101 @@ namespace Tennis
     }
     public class TennisGameManager
     {
-      private  Player player1 = new Player();
-      private Player player2 = new Player();  
+      private  Player playerOne = new Player();
+      private Player playerTwo = new Player();  
 
 
         public TennisGameManager(string player1Name, string player2Name)
             
         {
-            this.player1.Name = player1Name;
-            this.player2.Name = player2Name;
+            this.playerOne .Name = player1Name;
+            this.playerTwo.Name = player2Name;
         }
 
         public string Score_Getter()
         {
-            ScoreText score;
-            if (doBothHaveSamePointsAndGameIsSamllerThanThree())
-            {
-               int scoreTextValues= System.Enum.GetNames(typeof(ScoreText)).Length;
-                for (int score = 0; score<=scoreTextValues;score++) {
-                    if (player1.Point == score)
-                        score = (ScoreText)score;
-                }
+            setRegularScoreText(playerOne);
+            setRegularScoreText(playerTwo);
+            setTextToAllOFirstfPointsAreValid(playerOne,playerTwo);
+            setLoveToPlayerOne(playerTwo, playerOne);
+            setLoveToPlayerOne(playerOne, playerTwo);
 
-
-              
-                if (player1.Point == 1)
-                    score = "Fifteen";
-                if (player1.Point == 2)
-                    score = "Thirty";
-
-                score += "-All";
+            Player player= returnWinner(playerOne, playerTwo);
+            if (player != null) {
+                return player.ResultText;
             }
-            if (player1.Point == player2.Point && player1.Point > 2)
-                score = "Deuce";
+            player = returnAdvenced(playerOne, playerTwo);
+            if (player != null)
+            {
+                return player.ResultText;
+            }
 
-            playerOneIsMoreThanZeroePlayerTwoEqualZero(player1,player2);
-            secondPlayerLessThanForeButMoreThanFirstPlayer(player1,player2);
-           score= secondPlayerLessThanFirstAndBiggerOrEqualThree(score,player1,player2);
 
-          
-            Player player = GetWinner(score, player1, player2);
-            return score;
+
+            if (isPlayerSocreEqual(playerOne,playerTwo) && playerOne.Point > 2)
+                return "Deuce";
+
+            return playerOne.ResultText + "-" + playerTwo.ResultText;
         }
 
-        private string secondPlayerLessThanFirstAndBiggerOrEqualThree(string score,Player player1,Player player2)
-        {
-
-            if (isFirstPlayerScoreHigherThanOther(player1, player2) && isScoreHigherOrEqualThreee(player2))
+        private Player returnAdvenced(Player player1, Player player2) {
+            for (int i = 0; i < 3; i++)
             {
-                score = "Advantage" + player1;
+                if (secondPlayerLessThanFirstAndBiggerOrEqualThree(player2, player1))
+            {
+                setResultTextToAdvantage(player2);
+                return player2;
             }
+            Player player = player1;
+            player1 = player2;
+            player2 = player;
+        }
+            return null;
+          
+        }
+        private Player returnWinner(Player player1,Player player2) {
 
-            return score;
+            for (int i = 0; i < 3; i++)
+            {
+                if (IsFristPlayerWinner(player1, player2))
+                {
+                    createWinnerText(player1);
+                    return player1;
+                }
+                Player player = player1;
+                player1 = player2;
+                player2 = player;
+            }
+            return null;
+        }
+        private void setTextToAllOFirstfPointsAreValid(Player player1,Player player2)
+        {
+            if (doBothHaveSamePointsAndGameIsSamllerThanThree(player1, player2))
+            {
+                player2.ResultText = "All";
+            }
+        }
+
+        private static void setRegularScoreText(Player player1)
+        {
+            int scoreTextValues = System.Enum.GetNames(typeof(ScoreText)).Length;
+
+            for (int i = 0; i <= scoreTextValues; i++)
+            {
+                if (player1.Point == i)
+                {
+                    ScoreText text = (ScoreText)i;
+                    player1.ResultText = text.ToString();
+                }
+            }
+        }
+
+        private bool secondPlayerLessThanFirstAndBiggerOrEqualThree(Player player1,Player player2)
+        {
+            return (isFirstPlayerScoreHigherThanOther(player1, player2) && isScoreHigherOrEqualThreee(player2));   
+        }
+        private void setResultTextToAdvantage(Player player) {
+            player.ResultText = "Advantage " + player.Name;
         }
 
         private static bool isScoreHigherOrEqualThreee(Player player)
@@ -74,36 +117,13 @@ namespace Tennis
             return player1.Point > player2.Point;
         }
 
-        private void secondPlayerLessThanForeButMoreThanFirstPlayer(Player player1, Player player2)
+
+        private void setLoveToPlayerOne(Player player1, Player player2)
         {
-
-            if(isFirstPlayerScoreHigherThanOther(player1,player2) && player1.Point < 4)
+            if (isSocreMoreThanZero(player2) && isSocreEqualToZero(player1))
             {
-                if (player1.Point == 2)
-                    player1.ResultText = "Thirty";
-                if (player1.Point == 3)
-                    player1.ResultText = "Forty";
-                if (player2.Point == 1)
-                    player2.ResultText = "Fifteen";
-                if (player2.Point == 2)
-                    player2.ResultText = "Thirty";
+                player1.ResultText = "Love";
             }
-
-        }
-
-        private void playerOneIsMoreThanZeroePlayerTwoEqualZero(Player player1, Player player2)
-        {
-            if (isSocreMoreThanZero(player1) && isSocreEqualToZero(player2))
-            {
-                if (player1.Point == 1)
-                    player1.ResultText = "Five_teen";
-                if (player1.Point == 2)
-                    player1.ResultText = "Thirty";
-                if (player1.Point == 3)
-                    player1.ResultText = "Forty";
-                player2.ResultText = "Love";
-            }
-
         }
 
         private static bool isSocreEqualToZero(Player player)
@@ -115,9 +135,9 @@ namespace Tennis
             return player.Point > 0;
         }
 
-        private bool doBothHaveSamePointsAndGameIsSamllerThanThree()
+        private bool doBothHaveSamePointsAndGameIsSamllerThanThree(Player player1, Player player2)
         {
-            return isPlayerSocreEqual(player1,player1) && player1.Point < 3;
+            return isPlayerSocreEqual(player1,player2) && player1.Point < 3;
         }
 
         private bool isPlayerSocreEqual(Player player1, Player player2)
@@ -125,48 +145,25 @@ namespace Tennis
             return player1.Point == player2.Point;
         }
 
-        public static Player GetWinner(Player player1, Player player2)
+        
+        private  bool  IsFristPlayerWinner( Player player2, Player player1)
         {
-            if (player2.Point >= 4 && player1.Point >= 0 && (player2.Point - player1.Point) >= 2)
-            {
-                return player2;
-            }
-            else {
-                return null;
-            }
+            return (player2.Point >= 4 && player1.Point >= 0 && (player2.Point - player1.Point) >= 2);
+            
                   
         }
+         
+        private void createWinnerText(Player player) {
 
-        private string createWinnerText(Player player) {
-            return "Win for" +player.Name;
+            player.ResultText = "Win for " + player.Name;
         }
 
-        public void SetPlayer1Score(int number)
-        {
-            for (int i = 0; i < number; i++)
-            {
-                P1Score();
-            }
-        }
-
-        public void SetP2Score(int number)
-        {
-            for (var i = 0; i < number; i++)
-            {
-                SecondPlayerScore();
-            }
-        }
-
-        private void P1Score() => player1.Point++;
-        private void SecondPlayerScore()
-        {
-            player2.Point++;
-        }
-
+        private void FirstPlayerScore() => playerOne.Point++;
+        private void SecondPlayerScore()=>playerTwo.Point++;
         public void WonPoint(string tennisPlayer)
         {
             if (tennisPlayer == "player1"){
-                P1Score();}
+                FirstPlayerScore();}
             else
                 SecondPlayerScore();
         }
