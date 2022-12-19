@@ -4,18 +4,10 @@ public class Zoo
 {
     public static string MakeNoise(Animal animal)
     {
-        if (typeof(Dog).IsInstanceOfType(animal))
-        {
-            return animal.Name + " says 'woof'";
-        }
-        if (typeof(Horse).IsInstanceOfType(animal))
-        {
-            return animal.Name + " says 'neigh'";
-        }
-        if (typeof(Cow).IsInstanceOfType(animal))
-        {
-            return animal.Name + " says 'mooh'";
-        }
+        try{
+            return animal.Noise;
+        }catch (Exception e) { 
         throw new ArgumentException("unknown animal, unknown sound");
+        }
     }
 }
