@@ -9,7 +9,7 @@ public class CurrencyConverter
         this.ToCurrency = toCurrency;
     }
 
-    public double ConvertTo(double amount)
+    public double ConvertToChf(double amount)
     {
         switch (ToCurrency)
         {

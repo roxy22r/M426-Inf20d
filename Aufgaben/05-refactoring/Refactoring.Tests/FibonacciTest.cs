@@ -8,7 +8,15 @@ public class FibonacciTest
     [Fact]
     public void TestFirstFibonacciNumberIsOne()
     {
-        // TODO: write test
+        // Arrange
+        int n = 1;
+        int expected = 1;
+
+        // Act
+        int actual = Fibonacci.Fib(n);
+
+        // Assert
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
